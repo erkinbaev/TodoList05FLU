@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list_05flu/add/add_page.dart';
+import 'package:todo_list_05flu/database/todo.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -12,13 +13,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  //mock-данные
+  List<Todo> todoList = [
+    Todo(id: 1, title: "Записаться на курсы по flutter", isDone: true, createdAt: "01.03.2026"),
+    Todo(id: 2, title: "Прочесть Война и Мир", isDone: false, createdAt: "20.04.2026"),
+    Todo(id: 3, title: "Купить новый телефон", isDone: false, createdAt: "1.09.2026"),
+    Todo(id: 4, title: "Посмотреть сериал Игра престолов", isDone: false, createdAt: "10.05.2026"),
+    ];
 
   //Инициализироваться - появиться в памяти
   @override
@@ -38,17 +39,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        child: ListView.builder(
+          itemCount: todoList.length,
+          itemBuilder: (context, index) {
+            final title = todoList[index].title;
+            return ListTile(title: Text(title));
+          }
+          )
         ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddPage,
         tooltip: 'Increment',
@@ -70,5 +68,25 @@ class _MyHomePageState extends State<MyHomePage> {
    if (result != null) {
     print("$result");
    } 
+  }
+
+  void _onTapLike() {
+    setState(() {
+      // isLiked = !isLiked;
+      // if (isLiked == true) {
+      //     likes += 1;
+      // } else {
+      //     likes -= 1;
+      // }
+    });
+    
+    // print("likes: $likes");
+    // print("isLiked: $isLiked"); 
+  }
+
+  void _onCommentsTap() {
+    setState(() {
+     // isCommentsVisible = !isCommentsVisible;
+    });
   }
 }
