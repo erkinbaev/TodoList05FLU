@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list_05flu/add/add_view_model.dart';
+import 'package:todo_list_05flu/database/app_database.dart';
+import 'package:todo_list_05flu/database/app_repository.dart';
+import 'package:todo_list_05flu/database/todo.dart';
 
 class AddPage extends StatefulWidget {
-  const AddPage();
+  final AppDatabase database;
+  const AddPage({required this.database});
 
   @override
   State<StatefulWidget> createState() => _AddPageState();
@@ -9,12 +14,17 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
 TextEditingController _controller = TextEditingController();
+late final AddViewModel vm;
+late final AppDatabase db;
 
 @override
   void initState() {
     // TODO: implement initState
     super.initState();
     print("Add Page - initState");
+    db = widget.database;
+    final repo = AppRepositoryImpl(db: db);
+    vm = AddViewModel(repo: repo);
   }
 
   @override
@@ -50,6 +60,8 @@ TextEditingController _controller = TextEditingController();
   }
 
   void _saveTodo() {
+    final todo = Todo(id: 5, title: _controller.text, isDone: false, createdAt: DateTime.now().toString());
+    vm.addTodo(todo);
     Navigator.pop(context, _controller.text);
   }
 }

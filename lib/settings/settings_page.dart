@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final bool isDarkTheme;
+  final Function(bool) onThemeChanged;
+
+  const SettingsPage({super.key, required this.isDarkTheme, required this.onThemeChanged});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  bool isDarkTheme = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isDarkTheme = widget.isDarkTheme;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +47,6 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Row(
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
-
             children: [
               Column(
                 crossAxisAlignment:
@@ -64,10 +75,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-
               Switch(
-                value: false,
-                onChanged: (v) {},
+                value: isDarkTheme,
+                onChanged: (value) {
+                  setState(() {
+                     isDarkTheme = value;
+                  });
+                  saveTheme();
+                  widget.onThemeChanged(value);
+
+                },
               )
             ],
           ),
@@ -75,4 +92,10 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
+  Future<void> saveTheme() async {
+    final preferences = await SharedPreferences.getInstance();
+
+    await preferences.setBool('isDarkTheme', isDarkTheme);
+  } 
 }

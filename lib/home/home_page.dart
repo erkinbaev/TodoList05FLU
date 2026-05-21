@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_list_05flu/add/add_page.dart';
+import 'package:todo_list_05flu/database/app_database.dart';
+import 'package:todo_list_05flu/database/app_repository.dart';
 import 'package:todo_list_05flu/database/todo.dart';
+import 'package:todo_list_05flu/home/home_view_model.dart';
 import 'package:todo_list_05flu/settings/settings_page.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  final bool isDarkTheme;
+  final Function(bool) onThemeChanged;
 
-  final String title;
+  const MyHomePage({super.key, required this.isDarkTheme, required this.onThemeChanged});
 
 //Выделить память
   @override
@@ -14,13 +19,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //mock-данные
-  List<Todo> todoList = [
-    Todo(id: 1, title: "Записаться на курсы по flutter", isDone: true, createdAt: "01.03.2026"),
-    Todo(id: 2, title: "Прочесть Война и Мир", isDone: false, createdAt: "20.04.2026"),
-    Todo(id: 3, title: "Купить новый телефон", isDone: false, createdAt: "1.09.2026"),
-    Todo(id: 4, title: "Посмотреть сериал Игра престолов", isDone: false, createdAt: "10.05.2026"),
-    ];
+  late final HomeViewModel vm;
+  late final AppDatabase db;
 
   //Инициализироваться - появиться в памяти
   @override
@@ -28,6 +28,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     print("Home Page - initState");
+    db = AppDatabase();
+    final repo = AppRepositoryImpl(db: db);
+    vm = HomeViewModel(repo: repo);
+    vm.getTodoList();
   }
 
   //Рисует, строит отображение
@@ -37,14 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text("Мои задачи"),
         actions: [IconButton(onPressed: _navigateToSettingsPage, icon: Icon(Icons.settings))],
       ),
       body: Center(
         child: ListView.builder(
-          itemCount: todoList.length,
+          itemCount: vm.todoList.length,
           itemBuilder: (context, index) {
-            final title = todoList[index].title;
+            final title = vm.todoList[index].title;
             return ListTile(title: Text(title));
           }
           )
@@ -66,13 +70,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _navigateToAddPage() async {
-   final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => AddPage()));
+   final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => AddPage(database: db)));
+   setState(() {
+     vm.getTodoList();
+   });
+   
    if (result != null) {
     print("$result");
    } 
   }
 
   void _navigateToSettingsPage() async {
-   Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsPage()));
+   Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsPage(isDarkTheme: widget.isDarkTheme, onThemeChanged: widget.onThemeChanged)));
   }
 }
