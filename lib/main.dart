@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list_05flu/home/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,7 +10,9 @@ void main() async {
   final preferences = await SharedPreferences.getInstance();
   final isDarkTheme = preferences.getBool('isDarkTheme') ?? false;
   //Просмотерл ли пользователь онбординги
-  final isOnboardShown = 
+ // final isOnboardShown = 
+  await Hive.initFlutter();
+  await Hive.openBox('todoBox');
 
   runApp(MyApp(isDarkTheme: isDarkTheme));
 }

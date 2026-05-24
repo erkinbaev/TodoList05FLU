@@ -1,8 +1,8 @@
 //модель данных для задачи
 class Todo {
   final int id;
-  final String title;
-  final bool isDone;
+   String title;
+   bool isDone;
   final String createdAt;
 
   Todo(
