@@ -13,3 +13,10 @@ class Todo {
     required this.createdAt
     });  
 }
+
+// class Note {
+//   final int id;
+//    String title;
+//    String description;
+//   final String createdAt;
+// }

@@ -3,7 +3,7 @@ import 'package:todo_list_05flu/database/todo.dart';
 import 'package:hive/hive.dart';
 
 class AppDatabase {
-
+  //Создаем первый box(полка внешняя)
   final Box box = Hive.box('todoBox');
 
   List<Todo> _todoList = [];
@@ -15,8 +15,9 @@ class AppDatabase {
 //hive -> dart
   void loadTodos() {
     final data = box.get('todos', defaultValue: []);
-
+    //map - цикл, который возвращает новые список
     _todoList = List<Map>.from(data).map( (e) {
+      //в hive все данные лежат по ключу и значению, поэтому достаем и указываем ключи
       return Todo(
         id: e['id'], 
         title: e['title'], 
@@ -28,6 +29,7 @@ class AppDatabase {
 
   //dart -> hive
   void saveTodos() {
+    //map - цикл, который возвращает новые список
     final data = _todoList.map((todo) {
       return {
         "id": todo.id,
@@ -54,14 +56,19 @@ class AppDatabase {
 
     //UPDATE
     void updateTodo(int index, String title) {
-
+      _todoList[index].title = title;
       saveTodos();
     }
 
     //DELETE
     void deleteTodo(int index) {
-      
+      _todoList.removeAt(index);
       saveTodos();
     }
 
+    //Для чекбокса залачи
+    void updateTodoState(int index, bool isDone) {
+      _todoList[index].isDone = isDone;
+      saveTodos();
+    }
 }

@@ -59,9 +59,69 @@ late final AppDatabase db;
     print("Add Page - dispose");
   }
 
-  void _saveTodo() {
-    final todo = Todo(id: 5, title: _controller.text, isDone: false, createdAt: DateTime.now().toString());
-    vm.addTodo(todo);
-    Navigator.pop(context, _controller.text);
+  Future <void> _saveTodo() async {
+    String title = _controller.text;
+    try {
+      if (title.length < 3) {
+      throw(TodoTitleException("title symbols can't be lower than 3"));
+      } 
+      final todo = Todo(id: 5, title: title, isDone: false, createdAt: DateTime.now().toString());
+      vm.addTodo(todo);
+      showAppSnackBar(context, text: "Задача успешно сохранена!", backgroundColor: Colors.green, icon: Icons.check_circle);
+      Future.delayed(Duration(seconds: 3));
+      Navigator.pop(context);
+    } catch (e) {
+      //print(e.toString());
+      showAppSnackBar(context, text: "Название не должно быть менее 3 символов", backgroundColor: Colors.red);
+    }
+  }
+
+  Future <void> showAppSnackBar(
+  BuildContext context, {
+  required String text,
+  Color? backgroundColor,
+  IconData? icon,
+  VoidCallback? onRetry,
+  String retryText = "Повторить",
+}) async {
+  final messenger = ScaffoldMessenger.of(context);
+
+  messenger.hideCurrentSnackBar();
+  messenger.showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: Colors.white),
+            const SizedBox(width: 12),
+          ],
+          Expanded(child: Text(text)),
+        ],
+      ),
+      backgroundColor: backgroundColor,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 100),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      duration: const Duration(seconds: 2),
+      action: onRetry == null
+          ? null
+          : SnackBarAction(
+              label: retryText,
+              onPressed: onRetry,
+              textColor: Colors.white,
+            ),
+    ),
+  );
+  }
+}
+
+class TodoTitleException implements Exception {
+  final String message;
+
+  TodoTitleException(this.message);
+
+  @override
+  String toString() {
+    return 'TodoTitleException: $message';
   }
 }

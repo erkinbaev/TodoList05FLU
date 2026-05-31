@@ -11,7 +11,9 @@ void main() async {
   final isDarkTheme = preferences.getBool('isDarkTheme') ?? false;
   //Просмотерл ли пользователь онбординги
  // final isOnboardShown = 
+ //инициализируем библиотеку hive
   await Hive.initFlutter();
+  //подгружаем данные с hive указав самую внешнюю "полку"
   await Hive.openBox('todoBox');
 
   runApp(MyApp(isDarkTheme: isDarkTheme));
